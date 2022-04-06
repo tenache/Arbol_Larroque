@@ -1,0 +1,15 @@
+                        if child.mother == None:
+                            child.mother = self
+                        else:
+                            try:
+                                prev_mother = child.mother
+                                child.mother = self
+                            except AttributeError:
+                                print('child assigned is not of type Person')
+                            try:
+                                if prev_mother.children != None:
+                                    if child in prev_mother.children:
+                                        prev_mother.remove(child)
+                            except AttributeError:
+                                print('Previous mother not of type Person')
+                            print ('Reassignment of mother')

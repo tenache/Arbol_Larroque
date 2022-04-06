@@ -11,7 +11,7 @@ import json
 
 
 def tree_from_json(file_name):
-    tree = {}
+    arbol = {}
     with open(file_name, 'r') as json_file:
         json_tree = json.load(json_file)
         for key in json_tree:
@@ -35,21 +35,21 @@ def tree_from_json(file_name):
         father = j_member['father']
         mother = j_member['mother']
         children = j_member['children']
-        member = Person(name=name, nick=nick, middle=middle, last=last, last2=last2, sex=sex, year=year, \
+        member = Person(name=name, nick=nick, middle=middle, last=last, last2=last2, sex=sex, year=year,
                         month=month, day=day, profession=profession, place=place, Larroque=Larroque, personID=personID)
         member.father = father
         member.mother = mother
         member.children = children
-        tree[key] = member
-    for key in tree:
-        member = tree[key]
-        if member.father != None:
+        arbol[key] = member
+    for key in arbol:
+        member = arbol[key]
+        if member.father is not None:
             fatherID = str(member.father)
-            father = tree[fatherID]
+            father = arbol[fatherID]
             member.assign_father(father)
-        if member.mother != None:
+        if member.mother is not None:
             motherID = str(member.mother)
-            mother = tree[motherID]
+            mother = arbol[motherID]
             member.assign_mother(mother)
         if member.children:
             offspring = []
@@ -58,10 +58,10 @@ def tree_from_json(file_name):
             for childID in offspring:
                 if type(childID) == int:
                     child_index = str(childID)
-                    child = tree[child_index]
+                    child = arbol[child_index]
                     member.assign_children(child)
                     member.children.remove(childID)
-    return tree
+    return arbol
 
 
 class tree():
@@ -178,7 +178,7 @@ class Person():
         except AttributeError:
             return f'Mother assigned, but type is {type(mother)}'
 
-     def assign_children(self, children):
+    def assign_children(self, children):
         if type(children) != str:
             if type(children) == str or type(children) == int:
                 children = [children]
@@ -205,7 +205,7 @@ class Person():
                             try:
                                 if prev_father.children != None:
                                     if child in prev_father.children:
-                                        prev_father.remove(child)
+                                        prev_father.children.remove(child)
                             except AttributeError:
                                 print('Previous father not of type Person')
                             print ('Reassignment of father')
@@ -221,7 +221,7 @@ class Person():
                             try:
                                 if prev_mother.children != None:
                                     if child in prev_mother.children:
-                                        prev_mother.remove(child)
+                                        prev_mother.children.remove(child)
                             except AttributeError:
                                 print('Previous mother not of type Person')
                             print ('Reassignment of mother')

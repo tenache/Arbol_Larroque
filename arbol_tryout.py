@@ -119,6 +119,7 @@ class Person():
         self.father = None
         self.mother = None
         self.assign_reference()
+        self.no_gender_parent = None
 
     def assign_reference(self, max_ref_len=10):
         self.ref = ''
@@ -142,37 +143,88 @@ class Person():
             self.ref = self.ref + 'son of' + self.father
 
     def assign_father(self, father):
-        if isinstance(father, Person):
+        if type(father) == str:
+            self.father = Person (name = father)
+        elif type(father) == dict:
+            try:
+                self.father = Person(name = father['first'], last = father['last'])
+            except KeyError:
+                return 'Unable to assign father. Wrong type of dict'
+        elif type(father) == int:
+            self.father = Person(personID = father)
+        else:
             self.father = father
+        try:
             if self not in father.children:
                 father.children.append(self)
-        elif type(father) == str:
-            self.father = Person(name=father)
+        except AttributeError:
+            return f'Father assigned, but type is {type(father)}'
 
     def assign_mother(self, mother):
-        if isinstance(mother, Person):
+        if type(mother) == str:
+            self.mother = Person(name = mother)
+        elif type(mother) == dict:
+            try:
+                self.mother = Person (name = mother['name'],last=mother['last'])
+            except AttributeError:
+                return 'Unable to assign mother. Wrong type of dict'
+        elif type(mother) == int:
+            self.mother = Person(personID = mother)
+        else:
             self.mother = mother
+        try:
             if self not in mother.children:
                 mother.children.append(self)
-        elif type(mother) == str:
-            self.mother = Person(name=mother)
+        except AttributeError:
+            return f'Mother assigned, but type is {type(mother)}'
 
-    def assign_children(self, children):
-        if type(children) != list:
-            children = [children]
+     def assign_children(self, children):
+        if type(children) != str:
+            if type(children) == str or type(children) == int:
+                children = [children]
+            else:
+                return f'Children must be str or list'
             for i, child in enumerate(children):
-                if isinstance(child, Person):
-                    self.children.append(child)
-                    if self.sex == str:
-                        if self.sex[0] == 'm' or self.sex == 'M':
-                            if child.father == None:
-                                child.father = self
-                        else:
-                            if child.mother == None:
-                                child.mother = self
-                elif type(child) == str:
+                if type(child) == str:
                     self.children.append(Person(name=child))
-
+                elif child == int:
+                    self.children.append(Person(personID=child))
+                else:
+                    self.children.append(child)
+                    if self.sex == None:
+                        child.no_gender_parent = self
+                    elif self.sex[0] == 'm' or self.sex[0] == 'M':
+                        if child.father == None:
+                            child.father = self
+                        else:
+                            try:
+                                prev_father = child.father
+                                child.father = self
+                            except AttributeError:
+                                print('child assigned is not of type Person')
+                            try:
+                                if prev_father.children != None:
+                                    if child in prev_father.children:
+                                        prev_father.remove(child)
+                            except AttributeError:
+                                print('Previous father not of type Person')
+                            print ('Reassignment of father')
+                    elif self.sex[0] == 'f' or self.sex[0] == 'F':
+                        if child.mother == None:
+                            child.mother = self
+                        else:
+                            try:
+                                prev_mother = child.mother
+                                child.mother = self
+                            except AttributeError:
+                                print('child assigned is not of type Person')
+                            try:
+                                if prev_mother.children != None:
+                                    if child in prev_mother.children:
+                                        prev_mother.remove(child)
+                            except AttributeError:
+                                print('Previous mother not of type Person')
+                            print ('Reassignment of mother')
     def to_json(self):
         children = []
         children_names = []

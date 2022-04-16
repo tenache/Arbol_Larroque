@@ -1,15 +1,32 @@
-                        if child.mother == None:
-                            child.mother = self
-                        else:
-                            try:
-                                prev_mother = child.mother
-                                child.mother = self
-                            except AttributeError:
-                                print('child assigned is not of type Person')
-                            try:
-                                if prev_mother.children != None:
-                                    if child in prev_mother.children:
-                                        prev_mother.remove(child)
-                            except AttributeError:
-                                print('Previous mother not of type Person')
-                            print ('Reassignment of mother')
+    for line in all_ancestors_global:
+        prev_gen = list(line)
+        new_gen = []
+        gen_count = 1
+        another_gen = True
+        while another_gen:
+            another_gen = False
+            for ancestor in prev_gen:  # ancestor first takes on the value of person1, then their parents, and so on.
+                if ancestor is not None:
+                    try:
+                        another_gen = True
+                        line[
+                            ancestor.father] = gen_count  # we're counting how many generations away each ancestor is.
+                        new_gen.append(
+                            ancestor.father)  # new gen is a temporary list only used to explore ancestors
+                    except AttributeError:
+                        print(
+                            f'ancestor has father of type {type(ancestor.father)}. He will not be included in the '
+                            f'ancestry')
+                    try:
+                        another_gen = True
+                        line[
+                            ancestor.mother] = gen_count  # we're counting how many generations away each ancestor is.
+                        new_gen.append(
+                            ancestor.mother)  # new gen is a temporary list only used to explore ancestors
+                    except AttributeError:
+                        print(
+                            f'ancestor has mother of type {type(ancestor.mother)}. He will not be included in the '
+                            f'ancestry')
+            prev_gen = list(new_gen)
+            new_gen = []
+            gen_count += 1

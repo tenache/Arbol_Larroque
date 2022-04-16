@@ -1,1 +1,29 @@
-{"personID": 9, "name": "Atilio", "nick_name": "Toto", "middle": "F", "last": "Fiorotto", "last2": null, "sex": "m", "year_of_birth": null, "month_of_birth": null, "day_of_birth": null, "profession": null, "mother": null, "father": 14, "children": [11, 3], "lived_in_Larroque?": true, "birthplace": null}
+[
+    {
+        "personID": 9,
+        "name": "Atilio",
+        "nick_name": "Toto",
+        "middle": "F",
+        "last": "Fiorotto",
+        "last2": null,
+        "sex": "m",
+        "year_of_birth": null,
+        "month_of_birth": null,
+        "day_of_birth": null,
+        "profession": null,
+        "mother": null,
+        "father": 14,
+        "children": [
+            11,
+            3
+        ],
+        "children_names": [
+            "Gerardo Fiorotto",
+            "Gri Fiorotto"
+        ],
+        "lived_in_Larroque?": true,
+        "birthplace": null,
+        "father_name": "Constantino Fiorotto",
+        "mother_name": null
+    }
+]

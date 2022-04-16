@@ -1,1 +1,27 @@
-{"personID": 14, "name": "Constantino", "nick_name": null, "middle": null, "last": "Fiorotto", "last2": null, "sex": "male", "year_of_birth": null, "month_of_birth": null, "day_of_birth": null, "profession": null, "mother": null, "father": null, "children": [9], "lived_in_Larroque?": true, "birthplace": null}
+[
+    {
+        "personID": 14,
+        "name": "Constantino",
+        "nick_name": null,
+        "middle": null,
+        "last": "Fiorotto",
+        "last2": null,
+        "sex": "male",
+        "year_of_birth": null,
+        "month_of_birth": null,
+        "day_of_birth": null,
+        "profession": null,
+        "mother": null,
+        "father": null,
+        "children": [
+            9
+        ],
+        "children_names": [
+            "Atilio F Fiorotto"
+        ],
+        "lived_in_Larroque?": true,
+        "birthplace": null,
+        "father_name": null,
+        "mother_name": null
+    }
+]

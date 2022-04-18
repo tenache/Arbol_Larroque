@@ -7,11 +7,8 @@ from arbol2 import relation
 
 
 def to_graphic_tree(person1, person2):
-    print('made it this far')
     people = [person1, person2]
     lca, gen_diff_person1, gen_diff_person2, line_follower_global = relation(person1, person2)
-    print('made it this far2')
-    print('checkpoint3')
     base_width_for_couple = 4  # the min number of places needed for two people is about 6.
     gen_diffs = [gen_diff_person1, gen_diff_person2]  # how many generations away each person is from lca.
     max_width1 = 2 ** (gen_diffs[0] - 1) * base_width_for_couple  # max_width1 is the middle, as person1 is left.
@@ -59,33 +56,26 @@ def to_graphic_tree(person1, person2):
         for i, parent in enumerate(parent_line):
             if parent in to_lca_people[i]:
                 parent_line.remove(parent)
-
-    print('checkpoint4')
-
     x = 0
-    initial_separation = base_width_for_couple / 4  # separation in graph between person1 and person2
+    initial_separation = base_width_for_couple / 5  # separation in graph between person1 and person2
     initial_width = 0  # will take on different value for person2.
     middle = max_width1 + initial_separation  # middle will be necessary to place lca.
     # this loop generates the "nodes" with the necessary information to later create the .dot file.
     for i, human in enumerate(people):
         # first we generate the first nodes, then sequentially fill up the ascendants in the below while loop
-        print('more checkpoints')
         parents_lca = False
         next_gen = True
         gen = 0
         gen_people = 2 ** gen
         gen_width_unit = max_widths[i] / (gen_people * 2)
-        print(f'max_width is {max_widths[i]}')
-        print(f'x before reassignment is {x}')
         # person2 will be positioned relative to person1. Initial_separation ensures that both halves stay separate.
         x = initial_width + gen_width_unit  # position of person1, person2
         initial_width = max_widths[i] + initial_separation * 2
-        print(f'gen_width_unit={gen_width_unit} for {people[i].ref}')
-        print(f'x={x}')
         y = - gen_diffs[i]
         node_name = human.name + '_' + str(human.ID)
         color = '#e5edc4'
-        new_node = {'node_name': node_name, 'pos': {'x': x, 'y': y}, 'color': color, 'human': human}
+        label = f'{human.name}\n{human.last_name}'
+        new_node = {'node_name': node_name, 'pos': {'x': x, 'y': y}, 'color': color, 'human': human, 'label': label}
         new_nodes = [new_node]
         all_nodes.append(new_node)
         unknownID = 0
@@ -117,7 +107,6 @@ def to_graphic_tree(person1, person2):
                         x = node['pos']['x']
                 else:
                     x = node['pos']['x']  # position of connector is above human.
-
                 connector_node = {'node_name': node_name, 'style': style, 'label': label, 'height': height,
                                   'width': width, 'shape': shape, 'pos': {'x': x, 'y': y}}
                 connector_nodes.append(connector_node)
@@ -125,7 +114,7 @@ def to_graphic_tree(person1, person2):
                     edges.append(f"{connector_node['node_name']} -- {node['node_name']}")
                 else:
                     extra_node = {'node_name': f'{node_name}_extra', 'style': style, 'label': label, 'height': height,
-                                  'width': width, 'shape': shape, 'pos': {'x':x, 'y': y - 1}}
+                                  'width': width, 'shape': shape, 'pos': {'x': x, 'y': y - 1}}
                     connector_nodes.append(extra_node)
                     edges.append(f"{extra_node['node_name']} -- {node['node_name']}")
                     edges.append(f"{connector_node['node_name']} -- {extra_node['node_name']}")
@@ -145,7 +134,7 @@ def to_graphic_tree(person1, person2):
                         gen_width_unit = max_widths[i] / (gen_people * 2)
                         direction = left_right[j]
                         if parent in lca:
-                            x = middle + gen_width_unit * direction
+                            x = middle + gen_width_unit * 1.5 * direction
                             reached_lca = True
                         else:
                             if parent in to_lca_people[i]:  # common ancestor must always be in the middle.
@@ -157,13 +146,15 @@ def to_graphic_tree(person1, person2):
                             node_name = parent.name + '_' + str(parent.ID)
                             color = colors[j]
                             node_human = parent
+                            label = f'{parent.name}\n{parent.last_name}'
                         except AttributeError:  # if parent unknown, add a special node to tree.
                             unknownID += 1
                             node_name = 'Unknown' + '_' + str(gen) + '_' + str(j) + '_' + str(unknownID)
                             color = colors[2]
                             node_human = None
+                            label = 'Unknown'
                         new_node = {'node_name': node_name, 'pos': {'x': x, 'y': y}, 'color': color,
-                                    'human': node_human}
+                                    'human': node_human, 'label': label}
                         next_new_nodes.append(new_node)
                         # connect the new node with the connector node of son
                         edges.append(f"{new_node['node_name']} -- {connector_node['node_name']}")
@@ -171,7 +162,7 @@ def to_graphic_tree(person1, person2):
             new_nodes = next_new_nodes
             for node in new_nodes:
                 all_nodes.append(node)
-    print('checkpoint5')
+
     to_dot_file = '''
     graph dotSrc {
    node [style=filled, shape = box]
@@ -179,7 +170,7 @@ def to_graphic_tree(person1, person2):
     for node in all_nodes:
         new_node_str = f"{node['node_name']} [fillcolor=\"{node['color']}\"" \
                        f",pos=\"{str(node['pos']['x'])}," \
-                       f"{str(node['pos']['y'])}!\"]"
+                       f"{str(node['pos']['y'])}!\",label=\"{node['label']}\"]"
         to_dot_file += f"\n    {new_node_str}"
     for connector in connector_nodes:
         new_connector_str = f"{connector['node_name']} " \
@@ -189,14 +180,5 @@ def to_graphic_tree(person1, person2):
     for edge in edges:
         to_dot_file += f"\n     {edge}"
     to_dot_file += '\n }'
-    print('made it this far3')
     with open('tree_graph.dot', 'w') as tree_graph:
         tree_graph.write(to_dot_file)
-
-    for i, line in enumerate(flipping_parents):
-        for j, human in enumerate(line):
-            try:
-                print(f'flipping parent is {human.ref}')
-                print(f'line parent is {to_lca_people[i][j].ref}')
-            except AttributeError:
-                print(None)
